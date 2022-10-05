@@ -13,6 +13,17 @@
     <%= restaurant.name  %>
   </h1>
   <h3><%= restaurant.location %> </h3>
+  <p>
+    <a href="/restaurants/<%= restaurant._id %>/edit ">Edit</a>
+  </p>
+  <p>
+  <form action="/restaurants/<%= restaurant._id %>?_method=delete" method="POST">
+    <button>Delete</button>
+  </form>
+  </p>
+  <footer>
+    <a href="/restaurants">View Restaurants!</a>
+  </footer>
 </body>
 
 </html>

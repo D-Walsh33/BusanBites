@@ -1,29 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create a New Restaurant</title>
-</head>
-
-<body>
-  <h1>Enter a New Restaurant</h1>
-  <form action="/restaurants" , method="POST">
-    <div>
-      <label for="name">Restaurant Name:</label>
-      <input type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name">
-    </div>
-    <div>
-      <label for="location">Restaurant Location</label>
-      <input type="text" name="restaurant[location]" id="location">
-    </div>
-    <button>Submit</button>
-  </form>
+<% layout('/layouts/boilerplate') %>
+<h1>Enter a New Restaurant</h1>
+<form action="/restaurants" , method="POST">
   <div>
-    <a href="/restaurants">View Restaurants</a>
+    <label for="name">Restaurant Name:</label>
+    <input type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name">
   </div>
-</body>
-
-</html>
+  <div>
+    <label for="location">Restaurant Location</label>
+    <input type="text" name="restaurant[location]" id="location">
+  </div>
+  <button>Submit</button>
+</form>
+<div>
+  <a href="/restaurants">View Restaurants</a>
+</div>

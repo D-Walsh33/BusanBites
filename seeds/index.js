@@ -32,6 +32,7 @@ const foods = [
 ]
 
 const mongoose = require('mongoose');
+const axios = require('axios');
 const Restaurant = require('../models/restaurant');
 mongoose.connect('mongodb://localhost:27017/busanbites', {
     useNewUrlParser: true,
@@ -44,15 +45,32 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
+async function seedImg() {
+    try {
+        const resp = await axios.get('https://api.unsplash.com/photos/random', {
+            params: {
+                client_id: 'qfTOQqhbt4clz0YUp4sjb0JNZp1IHgGW5ijFbuRebzs',
+                collections: 1424340
+            }
+        })
+        return resp.data.urls.small
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+
 const seedDB = async () => {
     await Restaurant.deleteMany({});
     const r = new Restaurant({ name: 'New Restaurant' });
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 15; i++) {
         const random8 = Math.floor(Math.random() * 8);
         const random8a = Math.floor(Math.random() * 8);
         const rest = new Restaurant({
             name: names[random8] + ' ' + foods[random8a],
-            location: `${hoods[random8]}`
+            location: `${hoods[random8]}`,
+            image: await seedImg(),
+            description: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. At odio adipisci repellendus voluptates tempora, in unde commodi quisquam esse quaerat reprehenderit deserunt nobis laborum, similique vel suscipit laudantium fugiat laboriosam!'
         })
         await rest.save();
     }

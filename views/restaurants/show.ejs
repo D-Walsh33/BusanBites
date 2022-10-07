@@ -1,25 +1,21 @@
 <% layout('/layouts/boilerplate') %>
-<h1>
-  <%= restaurant.name  %>
-</h1>
-
-<img src="<%= restaurant.image %> " alt="">
-
-<h3><%= restaurant.location %> </h3>
-
-<p>
-  <%= restaurant.description %>
-</p>
-
-<p>
-  <a href="/restaurants/<%= restaurant._id %>/edit ">Edit</a>
-</p>
-
-<p>
-<form action="/restaurants/<%= restaurant._id %>?_method=delete" method="POST">
-  <button>Delete</button>
-</form>
-</p>
-<footer>
-  <a href="/restaurants">View Restaurants!</a>
-</footer>
+<div class="row">
+  <div class="col-6 offset-3">
+    <div class="card" style="width: 18rem;">
+      <img src="<%= restaurant.image %>" class="card-img-top">
+      <div class="card-body">
+        <h5 class="card-title"><%= restaurant.name  %></h5>
+        <p class="card-text"><%= restaurant.description %> </p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-muted"><%= restaurant.location %></li>
+      </ul>
+      <div class="card-body">
+        <a href="/restaurants/<%= restaurant._id %>/edit" class="card-link btn btn-success">Edit</a>
+        <form class="d-inline" action="/restaurants/<%= restaurant._id %>?_method=delete" method="POST">
+          <button class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

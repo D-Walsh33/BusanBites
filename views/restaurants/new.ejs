@@ -1,16 +1,30 @@
 <% layout('/layouts/boilerplate') %>
-<h1>Enter a New Restaurant</h1>
-<form action="/restaurants" , method="POST">
-  <div>
-    <label for="name">Restaurant Name:</label>
-    <input type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name">
+<div class="row">
+  <h1 class="text-center">New Restaurant</h1>
+  <div class="col-6 offset-3">
+    <form action="/restaurants" , method="POST">
+      <div class="mb-3">
+        <label class="form-label" for="name">Restaurant Name:</label>
+        <input class="form-control" type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Restaurant Location</label>
+        <input class="form-control" type="text" name="restaurant[location]" id="location">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="image">Image URL</label>
+        <input class="form-control" type="text" name="restaurant[image]" id="image">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="description">Restaurant description</label>
+        <textarea class="form-control" type="text" name="restaurant[description]" id="description"></textarea>
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-success">Submit</button>
+      </div>
+    </form>
+    <div>
+      <a href="/restaurants">View Restaurants</a>
+    </div>
   </div>
-  <div>
-    <label for="location">Restaurant Location</label>
-    <input type="text" name="restaurant[location]" id="location">
-  </div>
-  <button>Submit</button>
-</form>
-<div>
-  <a href="/restaurants">View Restaurants</a>
 </div>

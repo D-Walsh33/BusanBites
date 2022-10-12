@@ -5,6 +5,12 @@ const Restaurant = require('./models/restaurant');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
+const catchAsync = require('./utils/catchAsync');
+const { request } = require('http');
+const ExpressError = require('./utils/ExpressError')
+const { restaurantSchema } = require('./schemas')
+const { join } = require('path');
+
 
 
 mongoose.connect('mongodb://localhost:27017/busanbites', {
@@ -29,6 +35,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'))
 
+const validateRestaurants = (req, res, next) => {
+    const { error } = restaurantSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next()
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home')
 })
@@ -42,32 +58,42 @@ app.get('/restaurants/new', (req, res) => {
     res.render('restaurants/new')
 })
 
-app.get('/restaurants/:id', async (req, res) => {
+app.get('/restaurants/:id', catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id)
     res.render('restaurants/show', { restaurant })
-})
+}))
 
-app.get('/restaurants/:id/edit', async (req, res) => {
+app.get('/restaurants/:id/edit', catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id)
     res.render('restaurants/edit', { restaurant })
-})
+}))
 
-app.post('/restaurants', async (req, res) => {
+app.post('/restaurants', validateRestaurants, catchAsync(async (req, res, next) => {
     const restaurant = new Restaurant(req.body.restaurant);
     await restaurant.save();
     res.redirect(`/restaurants/${restaurant._id}`)
-})
+}))
 
-app.put('/restaurants/:id', async (req, res) => {
+app.put('/restaurants/:id', validateRestaurants, catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
     res.redirect(`/restaurants/${restaurant._id}`)
-})
+}))
 
-app.delete('/restaurants/:id', async (req, res) => {
+app.delete('/restaurants/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndDelete(id)
     res.redirect('/restaurants')
+}))
+
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not found!', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = "Oh no! Something went wrong!";
+    res.status(statusCode).render('error', { err });
 })
 
 app.listen(3000, () => {

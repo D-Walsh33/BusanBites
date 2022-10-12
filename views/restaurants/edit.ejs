@@ -2,22 +2,26 @@
 <div class="row">
   <h1 class="text-center">Edit Restaurant</h1>
   <div class="col-6 offset-3">
-    <form action="/restaurants/<%= restaurant._id %>?_method=PUT" method="POST">
+    <form action="/restaurants/<%= restaurant._id %>?_method=PUT" method="POST" novalidate class="validated-form">
       <div class="mb-3">
         <label class="form-label" for="name">Restaurant Name:</label>
-        <input class="form-control" type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name" value="<%= restaurant.name %>">
+        <input class="form-control" type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name" value="<%= restaurant.name %>" required>
+        <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="location">Restaurant Location</label>
-        <input class="form-control" type="text" name="restaurant[location]" id="location" value="<%= restaurant.location %>">
+        <input class="form-control" type="text" name="restaurant[location]" id="location" value="<%= restaurant.location %>" required>
+        <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="image">Image URL</label>
-        <input class="form-control" type="text" name="restaurant[image]" id="image" value="<%= restaurant.image %>">
+        <input class="form-control" type="text" name="restaurant[image]" id="image" value="<%= restaurant.image %>" required>
+        <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="description">Restaurant description</label>
-        <textarea class="form-control" type="text" name="restaurant[description]" id="description"><%= restaurant.description %></textarea>
+        <textarea class="form-control" type="text" name="restaurant[description]" id="description" required><%= restaurant.description %></textarea>
+        <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
         <button class="btn btn-success">Update</button>

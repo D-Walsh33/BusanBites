@@ -10,7 +10,7 @@ const { request } = require('http');
 const ExpressError = require('./utils/ExpressError')
 const { restaurantSchema } = require('./schemas')
 const { join } = require('path');
-
+const Review = require('./models/review');
 
 
 mongoose.connect('mongodb://localhost:27017/busanbites', {
@@ -84,6 +84,15 @@ app.delete('/restaurants/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndDelete(id)
     res.redirect('/restaurants')
+}))
+
+app.post('/restaurants/:id/reviews', catchAsync(async (req, res) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+    const review = new Review(req.body.review);
+    restaurant.reviews.push(review);
+    await review.save();
+    await restaurant.save();
+    res.redirect(`/restaurants/${restaurant._id}`);
 }))
 
 app.all('*', (req, res, next) => {

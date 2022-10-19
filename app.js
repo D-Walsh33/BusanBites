@@ -8,7 +8,7 @@ const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const { request } = require('http');
 const ExpressError = require('./utils/ExpressError')
-const { restaurantSchema } = require('./schemas')
+const { restaurantSchema, reviewSchema } = require('./schemas')
 const { join } = require('path');
 const Review = require('./models/review');
 
@@ -45,6 +45,16 @@ const validateRestaurants = (req, res, next) => {
     }
 }
 
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next()
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home')
 })
@@ -59,7 +69,7 @@ app.get('/restaurants/new', (req, res) => {
 })
 
 app.get('/restaurants/:id', catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id)
+    const restaurant = await Restaurant.findById(req.params.id).populate('reviews');
     res.render('restaurants/show', { restaurant })
 }))
 
@@ -86,13 +96,21 @@ app.delete('/restaurants/:id', catchAsync(async (req, res) => {
     res.redirect('/restaurants')
 }))
 
-app.post('/restaurants/:id/reviews', catchAsync(async (req, res) => {
+app.post('/restaurants/:id/reviews', validateReview, catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
     const review = new Review(req.body.review);
     restaurant.reviews.push(review);
     await review.save();
     await restaurant.save();
     res.redirect(`/restaurants/${restaurant._id}`);
+}))
+
+app.delete('/restaurants/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Restaurant.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
+    await Review.findByIdAndDelete(reviewId)
+    res.redirect(`/restaurants/${id}`)
+
 }))
 
 app.all('*', (req, res, next) => {

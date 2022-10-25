@@ -3,7 +3,8 @@ const catchAsync = require('../utils/catchAsync');
 const Review = require('../models/review');
 const Restaurant = require('../models/restaurant');
 const ExpressError = require('../utils/ExpressError');
-const { reviewSchema } = require('../schemas')
+const { reviewSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware');
 
 
 const validateReview = (req, res, next) => {
@@ -18,7 +19,7 @@ const validateReview = (req, res, next) => {
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/', validateReview, catchAsync(async (req, res) => {
+router.post('/', isLoggedIn, validateReview, catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
     const review = new Review(req.body.review);
     restaurant.reviews.push(review);
@@ -28,7 +29,7 @@ router.post('/', validateReview, catchAsync(async (req, res) => {
     res.redirect(`/restaurants/${restaurant._id}`);
 }))
 
-router.delete('/:reviewId', catchAsync(async (req, res) => {
+router.delete('/:reviewId', isLoggedIn, catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Restaurant.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
     await Review.findByIdAndDelete(reviewId)

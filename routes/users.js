@@ -5,6 +5,7 @@ const User = require('../models/user');
 const passport = require('passport')
 
 router.get('/register', (req, res) => {
+
     res.render('users/register');
 })
 
@@ -13,8 +14,11 @@ router.post('/register', catchAsync(async (req, res) => {
         const { email, username, password } = req.body;
         const user = new User({ email, username });
         const registeredUser = await User.register(user, password);
-        req.flash('success', 'Welcome to BusanBites!');
-        res.redirect('/restaurants')
+        req.login(registeredUser, err => {
+            if (err) return next(err);
+            req.flash('success', 'Welcome to BusanBites!');
+            res.redirect('/restaurants');
+        });
     } catch (e) {
         req.flash('error', e.message)
         res.redirect('/register')
@@ -27,9 +31,17 @@ router.get('/login', (reg, res) => {
 
 router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
     req.flash('success', 'Welcome back!');
-    res.redirect('/restaurants');
+    const redirectUrl = req.session.returnTo || '/restaurants';
+    res.redirect(redirectUrl);
 })
 
+router.get('/logout', (req, res) => {
+    req.logout(function (err) {
+        if (err) { return next(err); }
+        req.flash('success', 'You have been logged out!')
+        res.redirect('/restaurants');
+    });
+})
 
 
 module.exports = router;

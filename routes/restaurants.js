@@ -2,7 +2,8 @@ const express = require('express');
 const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Restaurant = require('../models/restaurant');
-const { restaurantSchema } = require('../schemas')
+const { restaurantSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware');
 
 
 
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
     res.render('restaurants/index', { restaurants })
 })
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('restaurants/new')
 })
 
@@ -35,7 +36,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('restaurants/show', { restaurant })
 }))
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id)
     if (!restaurant) {
         req.flash('error', 'Cannot find that campground!')
@@ -44,21 +45,21 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
     res.render('restaurants/edit', { restaurant })
 }))
 
-router.post('/', validateRestaurants, catchAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validateRestaurants, catchAsync(async (req, res, next) => {
     const restaurant = new Restaurant(req.body.restaurant);
     await restaurant.save();
     req.flash('success', 'Succesfully created a new restaurant!')
     res.redirect(`/restaurants/${restaurant._id}`)
 }))
 
-router.put('/:id', validateRestaurants, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateRestaurants, catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
     req.flash('success', 'You have edited this Restaurant!')
     res.redirect(`/restaurants/${restaurant._id}`)
 }))
 
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndDelete(id)
     res.redirect('/restaurants')

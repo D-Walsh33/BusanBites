@@ -4,6 +4,7 @@ const ExpressError = require('../utils/ExpressError');
 const Restaurant = require('../models/restaurant');
 const { restaurantSchema } = require('../schemas');
 const { isLoggedIn } = require('../middleware');
+const { resolveInclude } = require('ejs');
 
 
 
@@ -28,7 +29,7 @@ router.get('/new', isLoggedIn, (req, res) => {
 })
 
 router.get('/:id', catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id).populate('reviews');
+    const restaurant = await Restaurant.findById(req.params.id).populate('reviews').populate('author');
     if (!restaurant) {
         req.flash('error', 'Cannot find that campground!')
         res.redirect('/restaurants')
@@ -47,6 +48,7 @@ router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
 
 router.post('/', isLoggedIn, validateRestaurants, catchAsync(async (req, res, next) => {
     const restaurant = new Restaurant(req.body.restaurant);
+    restaurant.author = req.user._id;
     await restaurant.save();
     req.flash('success', 'Succesfully created a new restaurant!')
     res.redirect(`/restaurants/${restaurant._id}`)
@@ -54,7 +56,12 @@ router.post('/', isLoggedIn, validateRestaurants, catchAsync(async (req, res, ne
 
 router.put('/:id', isLoggedIn, validateRestaurants, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
+    const restaurant = await Restaurant.findById(id)
+    if (!restaurant.author.equals(req.user._id)) {
+        req.flash(error, 'You do not have permission to do that!')
+        return res.redirect(`/restaurants/${id}`)
+    }
+    const rest = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
     req.flash('success', 'You have edited this Restaurant!')
     res.redirect(`/restaurants/${restaurant._id}`)
 }))

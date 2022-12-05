@@ -9,13 +9,17 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item text-muted"><%= restaurant.location %></li>
+        <li class="list-group-item">Submited by: <%= restaurant.author.username %></li>
       </ul>
+
+      <% if (currentUser && restaurant.author.equals(currentUser._id)) {%>
       <div class="card-body">
         <a href="/restaurants/<%= restaurant._id %>/edit" class="card-link btn btn-success">Edit</a>
         <form class="d-inline" action="/restaurants/<%= restaurant._id %>?_method=delete" method="POST">
           <button class="btn btn-danger">Delete</button>
         </form>
       </div>
+      <% } %>
     </div>
   </div>
   <div class="col-6">

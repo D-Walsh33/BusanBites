@@ -69,6 +69,7 @@ const seedDB = async () => {
         const rest = new Restaurant({
             name: names[random8] + ' ' + foods[random8a],
             location: `${hoods[random8]}`,
+            author: "638d8f6f4cbe81e72ca28bf8",
             image: await seedImg(),
             description: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. At odio adipisci repellendus voluptates tempora, in unde commodi quisquam esse quaerat reprehenderit deserunt nobis laborum, similique vel suscipit laudantium fugiat laboriosam!'
         })

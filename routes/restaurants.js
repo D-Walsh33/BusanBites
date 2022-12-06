@@ -1,22 +1,10 @@
 const express = require('express');
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressError');
 const Restaurant = require('../models/restaurant');
-const { restaurantSchema } = require('../schemas');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isAuthor, validateRestaurant } = require('../middleware');
 const { resolveInclude } = require('ejs');
 
 
-
-const validateRestaurants = (req, res, next) => {
-    const { error } = restaurantSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next()
-    }
-}
 const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res) => {
@@ -29,7 +17,12 @@ router.get('/new', isLoggedIn, (req, res) => {
 })
 
 router.get('/:id', catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id).populate('reviews').populate('author');
+    const restaurant = await Restaurant.findById(req.params.id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'author'
+        }
+    }).populate('author');
     if (!restaurant) {
         req.flash('error', 'Cannot find that campground!')
         res.redirect('/restaurants')
@@ -37,8 +30,9 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('restaurants/show', { restaurant })
 }))
 
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id)
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const restaurant = await Restaurant.findById(id);
     if (!restaurant) {
         req.flash('error', 'Cannot find that campground!')
         res.redirect('/restaurants')
@@ -46,7 +40,7 @@ router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     res.render('restaurants/edit', { restaurant })
 }))
 
-router.post('/', isLoggedIn, validateRestaurants, catchAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validateRestaurant, catchAsync(async (req, res, next) => {
     const restaurant = new Restaurant(req.body.restaurant);
     restaurant.author = req.user._id;
     await restaurant.save();
@@ -54,21 +48,17 @@ router.post('/', isLoggedIn, validateRestaurants, catchAsync(async (req, res, ne
     res.redirect(`/restaurants/${restaurant._id}`)
 }))
 
-router.put('/:id', isLoggedIn, validateRestaurants, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateRestaurant, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const restaurant = await Restaurant.findById(id)
-    if (!restaurant.author.equals(req.user._id)) {
-        req.flash(error, 'You do not have permission to do that!')
-        return res.redirect(`/restaurants/${id}`)
-    }
-    const rest = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
+    const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
     req.flash('success', 'You have edited this Restaurant!')
     res.redirect(`/restaurants/${restaurant._id}`)
 }))
 
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     const restaurant = await Restaurant.findByIdAndDelete(id)
+    req.flash('success', 'You have deleted this Restaurant!')
     res.redirect('/restaurants')
 }))
 

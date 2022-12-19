@@ -5,7 +5,7 @@ const { resolveInclude } = require('ejs');
 const restaurants = require('../controllers/restaurants');
 const multer = require('multer');
 const { storage } = require('../cloudinary');
-const upload = multer({ dest: storage });
+const upload = multer({ storage });
 
 
 const router = express.Router({ mergeParams: true });

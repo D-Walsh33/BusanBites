@@ -6,7 +6,12 @@ const RestaurantSchema = new Schema({
     name: String,
     description: String,
     location: String,
-    image: String,
+    image: [
+        {
+            url: String,
+            filename: String
+        }
+    ],
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'

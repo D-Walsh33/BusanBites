@@ -2,7 +2,7 @@
 <div class="row">
   <h1 class="text-center">Edit Restaurant</h1>
   <div class="col-6 offset-3">
-    <form action="/restaurants/<%= restaurant._id %>?_method=PUT" method="POST" novalidate class="validated-form">
+    <form action="/restaurants/<%= restaurant._id %>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
       <div class="mb-3">
         <label class="form-label" for="name">Restaurant Name:</label>
         <input class="form-control" type="text" name="restaurant[name]" id="name" placeholder="Restaurant Name" value="<%= restaurant.name %>" required>
@@ -14,14 +14,22 @@
         <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
-        <label class="form-label" for="image">Image URL</label>
-        <input class="form-control" type="text" name="restaurant[image]" id="image" value="<%= restaurant.image %>" required>
-        <div class="valid-feedback">Looks good!</div>
+        <label for="image" class="form-label">Add more image(s)</label>
+        <input class="form-control" type="file" id="image" name="image" multiple>
       </div>
       <div class="mb-3">
         <label class="form-label" for="description">Restaurant description</label>
         <textarea class="form-control" type="text" name="restaurant[description]" id="description" required><%= restaurant.description %></textarea>
         <div class="valid-feedback">Looks good!</div>
+      </div>
+      <div class="mb-3">
+        <% restaurant.images.forEach(function(img, i) { %>
+        <img src="<%= img.thumb %>" class="img-thumbnail" alt="">
+        <div class="form-check-inline">
+          <input type="checkbox" id="img-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+        </div>
+        <label for="img-<%=i%>">Delete Image</label>
+        <% }) %>
       </div>
       <div class="mb-3">
         <button class="btn btn-success">Update</button>

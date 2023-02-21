@@ -69,7 +69,8 @@ const seedDB = async () => {
         const rest = new Restaurant({
             name: names[random8] + ' ' + foods[random8a],
             location: `${hoods[random8]}`,
-            author: "63a029e6db4b18f36e441b44",
+            // author: "63a029e6db4b18f36e441b44", for desktop
+            author: "638d8f6f4cbe81e72ca28bf8", // for laptop
             images: [
                 {
                     url: 'https://res.cloudinary.com/djelcbgal/image/upload/v1671444815/BusanBites/l2fpw2qzwmasanikwrd2.png',

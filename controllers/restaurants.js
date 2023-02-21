@@ -1,4 +1,5 @@
 const Restaurant = require('../models/restaurant');
+const { cloudinary } = require("../cloudinary");
 
 module.exports.index = async (req, res) => {
     const restaurants = await Restaurant.find({});
@@ -35,24 +36,34 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.createRestaurant = async (req, res, next) => {
     const restaurant = new Restaurant(req.body.restaurant);
-    restaurant.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
+    restaurant.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     restaurant.author = req.user._id;
     await restaurant.save();
-    console.log(restaurant)
-    req.flash('success', 'Succesfully created a new restaurant!')
-    res.redirect(`/restaurants/${restaurant._id}`)
+    console.log(restaurant);
+    req.flash('success', 'Succesfully created a new restaurant!');
+    res.redirect(`/restaurants/${restaurant._id}`);
 }
 
 module.exports.updateRestaurant = async (req, res) => {
     const { id } = req.params;
-    const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant })
-    req.flash('success', 'You have edited this Restaurant!')
-    res.redirect(`/restaurants/${restaurant._id}`)
+    const restaurant = await Restaurant.findByIdAndUpdate(id, { ...req.body.restaurant });
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    restaurant.images.push(...imgs);
+    await restaurant.save();
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            cloudinary.uploader.destroy(filename);
+        }
+        await restaurant.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
+        console.log(restaurant);
+    }
+    req.flash('success', 'You have edited this Restaurant!');
+    res.redirect(`/restaurants/${restaurant._id}`);
 }
 
 module.exports.deleteRestaurant = async (req, res) => {
     const { id } = req.params;
-    const restaurant = await Restaurant.findByIdAndDelete(id)
-    req.flash('success', 'You have deleted this Restaurant!')
-    res.redirect('/restaurants')
+    const restaurant = await Restaurant.findByIdAndDelete(id);
+    req.flash('success', 'You have deleted this Restaurant!');
+    res.redirect('/restaurants');
 }

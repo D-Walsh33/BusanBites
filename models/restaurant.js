@@ -10,9 +10,21 @@ const ImageSchema = new Schema({
 ImageSchema.virtual('thumb').get(function () {
     return this.url.replace('/upload', '/upload/w_200')
 })
+
 const RestaurantSchema = new Schema({
     name: String,
     description: String,
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     location: String,
     images: [ImageSchema],
     author: {

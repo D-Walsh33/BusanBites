@@ -11,6 +11,8 @@ ImageSchema.virtual('thumb').get(function () {
     return this.url.replace('/upload', '/upload/w_200')
 })
 
+const opts = { toJSON: { virtuals: true } };
+
 const RestaurantSchema = new Schema({
     name: String,
     description: String,
@@ -37,7 +39,12 @@ const RestaurantSchema = new Schema({
             ref: 'Review'
         }
     ]
-});
+}, opts);
+
+RestaurantSchema.virtual('properties.popUpMarkup').get(function () {
+    return `<strong><a href="/restaurants/${this._id}">${this.name}</a></strong>
+    <p>${this.description.substring(0, 25)}...</p>`
+})
 
 RestaurantSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {

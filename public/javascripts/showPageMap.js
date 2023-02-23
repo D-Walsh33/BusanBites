@@ -8,4 +8,10 @@ const map = new mapboxgl.Map({
 
 new mapboxgl.Marker()
     .setLngLat(restaurant.geometry.coordinates)
+    .setPopup(
+        new mapboxgl.Popup({ offset: 25 })
+            .setHTML(
+                `<h3>${restaurant.name}</h3><p>${restaurant.location}</p>`
+            )
+    )
     .addTo(map)

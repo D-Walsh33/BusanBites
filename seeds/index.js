@@ -69,6 +69,10 @@ const seedDB = async () => {
         const rest = new Restaurant({
             name: names[random8] + ' ' + foods[random8a],
             location: `${hoods[random8]}`,
+            geometry: {
+                type: "Point",
+                coordinates: [129.0756, 35.1796]
+            },
             // author: "63a029e6db4b18f36e441b44", for desktop
             author: "638d8f6f4cbe81e72ca28bf8", // for laptop
             images: [

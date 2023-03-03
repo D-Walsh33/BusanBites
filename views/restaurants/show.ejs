@@ -3,12 +3,11 @@
 
 <div class="row">
   <div class="col-6">
-    <div id="map"></div>
     <div id="restaurantCarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
         <% restaurant.images.forEach((img, i) => { %>
         <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
-          <img src="<%= img.url %>" class=" d-block w-100" alt="">
+          <img src="<%= img.url %>" class=" d-block w-100" alt="" crossorigin>
         </div>
         <% }) %>
       </div>
@@ -44,6 +43,7 @@
     </div>
   </div>
   <div class="col-6">
+    <div id="map"></div>
     <% if (currentUser) {%>
     <h2>Leave a Review:</h2>
     <form action="/restaurants/<%= restaurant._id %>/reviews" method="POST" class="mb-3 validated-form" novalidate>

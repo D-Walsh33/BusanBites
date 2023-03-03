@@ -77,12 +77,12 @@ const seedDB = async () => {
             author: "638d8f6f4cbe81e72ca28bf8", // for laptop
             images: [
                 {
-                    url: 'https://res.cloudinary.com/djelcbgal/image/upload/v1671444815/BusanBites/l2fpw2qzwmasanikwrd2.png',
+                    url: 'https://res.cloudinary.com/djelcbgal/image/upload/v1671442064/BusanBites/cabdbfcqxvtgs1fpq9ks.png',
                     filename: 'BusanBites/l2fpw2qzwmasanikwrd2'
 
                 },
                 {
-                    url: 'https://res.cloudinary.com/djelcbgal/image/upload/v1671444815/BusanBites/r8wdoboyony9ga9ritd5.jpg',
+                    url: 'https://res.cloudinary.com/djelcbgal/image/upload/v1671443271/BusanBites/s10vhzoqnuk140omykzx.png',
                     filename: 'BusanBites/r8wdoboyony9ga9ritd5'
                 }
             ],

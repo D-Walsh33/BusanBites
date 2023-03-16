@@ -2,13 +2,13 @@ if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
-const session = require('express-session');
 const flash = require('connect-flash');
 const { request } = require('http');
 const ExpressError = require('./utils/ExpressError')
@@ -18,12 +18,15 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-
+const session = require('express-session');
+const MongoStore = require("connect-mongo");
 
 const restaurantRoutes = require('./routes/restaurants');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
+//const dbUrl = process.env.DB_URL;
 
+//'mongodb://localhost:27017/busanbites'
 mongoose.connect('mongodb://localhost:27017/busanbites', {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -96,11 +99,22 @@ app.use(
     })
 );
 
+const dbUrl = 'mongodb://localhost:27017/busanbites';
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: "penguin"
+    }
+});
 
-
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR:", e)
+})
 
 
 const sessionConfig = {
+    store,
     name: 'session',
     secret: "ThisShouldBeARealSecret",
     resave: false,

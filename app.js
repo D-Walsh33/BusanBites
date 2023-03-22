@@ -24,10 +24,10 @@ const MongoStore = require("connect-mongo");
 const restaurantRoutes = require('./routes/restaurants');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
-//const dbUrl = process.env.DB_URL;
+const dbUrl = process.env.DB_URL;
 
 //'mongodb://localhost:27017/busanbites'
-mongoose.connect('mongodb://localhost:27017/busanbites', {
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -99,7 +99,6 @@ app.use(
     })
 );
 
-const dbUrl = 'mongodb://localhost:27017/busanbites';
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
